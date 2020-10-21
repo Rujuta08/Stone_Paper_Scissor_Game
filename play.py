@@ -34,7 +34,7 @@ def winner_compute(player_move, computer_move):
             return("Player")
 
 # Load Model
-model_path = 'Model_SPS.h5'
+model_path = 'Keras_Model.h5'
 sps = load_model(model_path, compile = False)
 
 
