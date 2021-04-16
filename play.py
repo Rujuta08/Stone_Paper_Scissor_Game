@@ -34,15 +34,21 @@ def winner_compute(player_move, computer_move):
             return("Player")
 
 # Load Model
-model_path = 'Keras_Model.h5'
-sps = load_model(model_path, compile = False)
-
-
-prev_move = 'None'
+model_path = 'Keras_model_main_tf2x.h5'
+sps = load_model(model_path)
 
 # starting video streaming
 camera = cv2.VideoCapture(0)
+#Check whether user selected camera is opened successfully.
+if not (camera.isOpened()):
+    print('Could not open video device')
 
+camera.set(cv2.CAP_PROP_FRAME_WIDTH, 1900)
+camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+
+prev_move = 'None'
+computer_move = "None"
+winner = "Waiting..."
 while True:
     ret,frame = camera.read()
 
@@ -50,21 +56,18 @@ while True:
         continue
 
     # Player's Area
-    cv2.rectangle(frame,(50,50),(250,250),(255,255,255),2)
+    cv2.rectangle(frame,(100,100),(500,500),(255,255,255),2)
 
     # PC's Area
-    cv2.rectangle(frame,(350,50),(550,250),(255,255,255),2)
+    cv2.rectangle(frame,(800,100),(1200,500),(255,255,255),2)
 
     # Extract Player's Image
-    pi = frame[50:250, 50:250]
+    pi = frame[100:500, 100:500]
     roi = cv2.cvtColor(pi, cv2.COLOR_BGR2RGB)
     roi = cv2.resize(roi,(227,227)) #, interpolation = cv2.INTER_AREA)
-    roi = roi.astype("float")
 
     preds = sps.predict_classes(np.array([roi]))
-    #move_prob = np.max(preds)
     player_move = mapper(preds[0])
-
     if prev_move != player_move:
         if player_move != 'None':
             computer_move = choice(['Stone','Paper','Scissor'])
@@ -77,16 +80,16 @@ while True:
 
     # Display
     font = cv2.FONT_HERSHEY_COMPLEX
-    cv2.putText(frame,"Your Move: " + player_move,(50,50),font,0.7,(0,0,0),2,cv2.LINE_AA)
-    cv2.putText(frame,"Computer's Move: " + computer_move,(350,50),font,0.7,(0,0,0),2,cv2.LINE_AA)
-    cv2.putText(frame,"Winner: " + winner,(200,400),font,0.7,(0,0,255),2,cv2.LINE_AA)
+    cv2.putText(frame,"Your Move: " + player_move,(50,50),font,1.2,(0,0,0),2,cv2.LINE_AA)
+    cv2.putText(frame,"Computer's Move: " + computer_move,(750,50),font,1.2,(0,0,0),2,cv2.LINE_AA)
+    cv2.putText(frame,"Winner: " + winner,(400,600),font,1.2,(0,0,255),2,cv2.LINE_AA)
 
     if computer_move != 'None':
         img = cv2.imread("op/{}.png".format(computer_move))
-        img = cv2.resize(img,(200,200))
-        frame[50:250, 350:550] = img
+        img = cv2.resize(img,(400,400))
+        frame[100:500, 800:1200] = img
 
-    cv2.namedWindow("Stone Paaper Scissor",cv2.WINDOW_NORMAL)
+    #cv2.namedWindow("Stone Paaper Scissor",cv2.WINDOW_NORMAL)
     cv2.imshow("Stone Paaper Scissor", frame)
 
     k = cv2.waitKey(10)
