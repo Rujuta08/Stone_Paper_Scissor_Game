@@ -34,7 +34,7 @@ def winner_compute(player_move, computer_move):
             return("Player")
 
 # Load Model
-model_path = 'Keras_model_main_tf2x.h5'
+model_path = 'Keras_model_test6.h5'
 sps = load_model(model_path)
 
 # starting video streaming
