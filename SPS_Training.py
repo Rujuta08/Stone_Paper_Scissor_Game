@@ -49,18 +49,19 @@ print('Input Data Shape: ', X_temp.shape)
 print('Output Data Shape: ', Y.shape)
 
 # Plot Data Distribution
-##value, counts = np.unique(Y_temp, return_counts = True)
-##plt.figure(figsize = (6,4))
-##sns.barplot(value,counts)
-##plt.title('Data Distribution')
-##plt.ylabel('Number',fontsize = 12)
-##plt.xlabel('Action',fontsize = 12)
-##plt.show()
+value, counts = np.unique(Y_temp, return_counts = True)
+plt.figure(figsize = (6,4))
+sns.barplot(value,counts)
+plt.title('Data Distribution')
+plt.ylabel('Number',fontsize = 12)
+plt.xlabel('Action',fontsize = 12)
+plt.show()
 
 # Display one sample datapoint
-#index = 1523
-#plt.imshow(X_temp[index])
-#plt.title(str(Y_temp[index]))
+index = 1523
+plt.imshow(X_temp[index])
+plt.title(str(Y_temp[index]))
+plt.show()
 
 
 # Train test Split
@@ -81,18 +82,24 @@ print('Testing Data Output shapes: ',Y_test.shape)
 # Define Model
 model = Sequential()
 dim = 227
-model.add(Conv2D(filters=8, kernel_size=(3,3), padding='same', activation='relu', input_shape=(dim,dim,3)))
-model.add(MaxPool2D(pool_size=(2,2), strides=(2,2)))
+model.add(Conv2D(filters=64, kernel_size=(3,3), padding='same', activation='relu', input_shape=(dim,dim,3)))
 model.add(BatchNormalization())
-model.add(Conv2D(filters=16, kernel_size=(3,3), padding='same', activation='relu'))
-model.add(MaxPool2D(pool_size=(2,2), strides=(2,2)))
+model.add(Conv2D(filters=64, kernel_size=(3,3), padding='same', activation='relu'))
 model.add(BatchNormalization())
+model.add(MaxPool2D(pool_size=(2,2), strides=(2,2)))
+
+model.add(Conv2D(filters=128, kernel_size=(3,3), padding='same', activation='relu'))
+model.add(BatchNormalization())
+model.add(Conv2D(filters=128, kernel_size=(3,3), padding='same', activation='relu'))
+model.add(BatchNormalization())
+model.add(MaxPool2D(pool_size=(2,2), strides=(2,2)))
+
 model.add(Flatten())
 model.add(Dense(len_classes, activation='softmax'))
 
 print(model.summary())
 # Save Model summary in a text file
-with open('modelsummary_Keras_model_test7.txt', 'w') as f:
+with open('modelsummary.txt', 'w') as f:
     model.summary(print_fn=lambda x: f.write(x + '\n'))
 
 # Compile and Fit the Model
@@ -116,13 +123,14 @@ ax[1].plot(history.history['accuracy'], color='b', label="Training accuracy")
 ax[1].plot(history.history['val_accuracy'], color='r',label="Validation accuracy")
 ax[1].grid(color='black', linestyle='-', linewidth=0.25)
 legend = ax[1].legend(loc='best', shadow=True)
-# plt.show()
-plt.savefig('Accuracy_loss_Keras_model_test7.png')
+plt.show()
+# plt.savefig('Accuracy_loss_Keras_model.png')
 
 #Evaluating and Saving Model
 baseline_model_loss ,baseline_model_accuracy=  model.evaluate(X_test,Y_test,verbose=0)
 print('Baseline Test accuracy:',baseline_model_accuracy) 
 print('Baseline Test loss:',baseline_model_loss) 
 
-model.save('Keras_model_test7.h5')
+# Save the model
+model.save('Keras_model.h5')
 print('Saved Model to Disk')
